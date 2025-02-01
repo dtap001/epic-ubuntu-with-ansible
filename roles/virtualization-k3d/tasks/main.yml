@@ -1,0 +1,12 @@
+---
+- name: "k3d: instal check if installed"
+  stat:
+    path: "/usr/local/bin/k3d"
+  register: k3d_installed
+
+- name: "k3d: download and install "
+  ansible.builtin.shell:
+    cmd: curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+  when: not k3d_installed.stat.exists
+  become: true
+  

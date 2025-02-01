@@ -1,0 +1,22 @@
+---
+- name: "DBeaver: add gpg key"
+  become: true #needed
+  become_user: root
+  apt_key:
+    url: https://dbeaver.io/debs/dbeaver.gpg.key
+    state: present
+
+- name: "DBeaver:  add repo"
+  become: true #needed
+  become_user: root
+  apt_repository: 
+    repo: 'deb https://dbeaver.io/debs/dbeaver-ce /'
+    filename: 'dbeaver.list'
+    state: present
+
+- name: "DBeaver: install"
+  become: true #needed
+  become_user: root
+  apt:
+    name: dbeaver-ce
+    state: latest

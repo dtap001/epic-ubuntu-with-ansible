@@ -1,0 +1,174 @@
+---
+- name: Install wget
+  become: true #needed
+  become_user: root
+  apt:
+    name: wget
+    state: latest
+
+- name: Install gnupg
+  become: true #needed
+  become_user: root
+  apt:
+    name: gnupg
+    state: latest
+
+- name: Install gnupg2
+  become: true #needed
+  become_user: root
+  apt:
+    name: gnupg2
+    state: latest
+
+- name: Install curl
+  become: true #needed
+  become_user: root
+  apt:
+    name: curl
+    state: latest
+
+- name: Install htop
+  become: true #needed
+  become_user: root
+  apt:
+    name: htop
+    state: latest
+
+- name: Install iotop
+  become: true #needed
+  become_user: root
+  apt:
+    name: iotop
+    state: latest
+
+- name: Install tree
+  become: true #needed
+  become_user: root
+  apt:
+    name: tree
+    state: latest
+
+- name: Install mc
+  become: true #needed
+  become_user: root
+  apt:
+    name: mc
+    state: latest
+  
+- name: Install nmap
+  become: true #needed
+  become_user: root
+  apt:
+    name: nmap
+    state: latest
+
+- name: Install bat
+  become: true #needed
+  become_user: root
+  apt:
+    name: bat
+    state: latest
+
+- name: "bat symlink properly"
+  become: true #needed
+  become_user: root
+  ansible.builtin.file:
+    dest: /usr/bin/bat 
+    src: /usr/bin/batcat
+    owner: '{{ user}}'
+    group: '{{ user}}'
+    state: link
+
+- name: Install net-tools
+  become: true
+  become_user: root
+  apt:
+    name: net-tools
+    state: latest
+
+- name: Install ncdu for disk usage stats and folder size storage usage
+  become: true
+  become_user: root
+  apt:
+    name: ncdu
+    state: latest
+
+- name: Install lnav for logfile viewing
+  become: true
+  become_user: root
+  apt:
+    name: lnav
+    state: latest
+
+- name: Install traceroute
+  become: true
+  become_user: root
+  apt:
+    name: traceroute
+    state: latest
+
+- name: Install flameshot for screenshots
+  become: true
+  become_user: root
+  apt:
+    name: flameshot
+    state: latest
+
+- name: "Flameshot: global summon. disable current print setting"
+  community.general.dconf:
+    key: "/org/gnome/terminal/legacy/keybindings/print"
+    value: "'disabled'"
+
+- name: "Flameshot: global summon"
+  community.general.dconf:
+    key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom5/name"
+    value: "'flameshot'"
+
+- name: "Flameshot: global summon"
+  community.general.dconf:
+    key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom5/binding"
+    value: "'Print'"
+  
+- name: "Flameshot: global summon"
+  community.general.dconf:
+    key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom5/command"
+    value: "'flameshot gui --clipboard --path /home/{{ user }}/Pictures/Screenshots'"
+
+- name: "Superfile: Check if already installed"
+  stat:
+    path: "/usr/local/bin/spf"
+  register: is_superfile_installed
+
+- name: "Superfile: install"
+  become: true # needed
+  become_user: "root"
+  shell:
+    cmd: bash -c "$(curl -sLo- https://superfile.netlify.app/install.sh)"
+  when: not is_superfile_installed.stat.exists
+  
+- name: Install ripgrep for recursive fuzzy search
+  become: true
+  become_user: root
+  apt:
+    name: ripgrep
+    state: latest
+
+- name: "broot: Check if already installed"
+  stat:
+    path: "/usr/local/bin/broot"
+  register: is_broot_installed
+
+- name: "broot: download"
+  ansible.builtin.get_url:
+    url: "https://dystroy.org/broot/download/x86_64-linux/broot"
+    dest: "/tmp/broot"
+  when: not is_broot_installed
+
+- name: "broot: move binary to usr bin"
+  become: true #needed
+  become_user: root  
+  ansible.builtin.copy:
+    src: "/tmp/broot"
+    dest: "/usr/local/bin/broot"
+    mode: '0755'
+  when: not is_broot_installed

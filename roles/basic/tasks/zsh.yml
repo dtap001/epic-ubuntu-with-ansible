@@ -1,0 +1,139 @@
+---
+- name: Zsh - Install.
+  become: true #needed
+  become_user: root
+  apt:
+    name: zsh
+    state: latest
+
+- name: check if oh my zsh already checkedout
+  stat:
+    path: "/home/{{ user }}/.oh-my-zsh"
+  register: oh_my_zsh_checkout_directory
+  become: true
+  
+- name: Oh my zsh - Cloning repo /home/{{ user }}/.oh-my-zsh.
+  git:
+    repo: "{{ oh_my_zsh_url_download }}"
+    dest: "/home/{{ user }}/.oh-my-zsh"
+    update: true
+    force: true
+  when:
+    not oh_my_zsh_checkout_directory.stat.exists
+
+- name: Oh my zsh - Set permissions.
+  file:
+    path: "/home/{{ user }}/.oh-my-zsh"
+    state: directory
+    recurse: true
+    owner: "{{ user }}"
+    group: "{{ user }}"
+  when:
+    not oh_my_zsh_checkout_directory.stat.exists
+
+- name: check if zshrc is already created
+  stat:
+    path: ~/.zshrc
+  register: zsh_rc_file
+  become: true
+  
+- name: Oh my zsh - Creating new ~/.zshrc.
+  template:
+    src: ../templates/zshrc.j2
+    dest: "/home/{{ user }}/.zshrc"
+
+- name: Oh my zsh - Set permissions ~/.zshrc.
+  file:
+    path: "/home/{{ user }}/.zshrc"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: 0644
+
+- name: Oh my zsh - Ensure user is using zsh shell.
+  become: true #needed
+  become_user: root
+  user:
+    name: "{{ user }}"
+    shell: /usr/bin/zsh
+
+- name: Ensure correct ownership of plugin directories
+  become: true #needed
+  become_user: root
+  file:
+    path: "{{ item.dest }}"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    state: directory
+    recurse: true
+  with_items: "{{ oh_my_zsh_custom_plugins }}"
+
+- name: Oh my zsh - Mark plugin directories as safe for Git
+  command: git config --global --add safe.directory "{{ item.dest }}"
+  with_items: "{{ oh_my_zsh_custom_plugins }}"
+
+- name: Oh my zsh - Add plugins.
+  git:
+    repo: "{{ item.repo }}"
+    dest: "{{ item.dest }}"
+  with_items: "{{ oh_my_zsh_custom_plugins }}"
+
+#FZF
+- name: check if FZF already installed
+  stat:
+    path: ~/.fzf
+  register: fzf_directory
+  become: true
+
+- name: Clone FZF
+  git:
+    repo: https://github.com/junegunn/fzf.git
+    dest: ~/.fzf
+    version: 0.18.0
+  when: not fzf_directory.stat.exists
+  become: true
+
+- name: Install FZF
+  command: ~/.fzf/install --bin
+  args:
+    chdir: ~/
+  become: true
+  when: not fzf_directory.stat.exists
+
+- name: Enable FZF in zsh
+  lineinfile:
+    path: ~/.zshrc
+    regexp:
+    line: '[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh'
+    state: present
+
+#powerlevel10k
+- name: Check if Powerlevel10k already installed
+  stat:
+    path: ~/.oh-my-zsh/custom/themes/powerlevel10k
+  register: powerline10k_directory
+
+- name: Install PowerLevel10k theme
+  git:
+    repo: https://github.com/romkatv/powerlevel10k.git
+    dest: ~/.oh-my-zsh/custom/themes/powerlevel10k
+    version: v1.13.0
+  when: not powerline10k_directory.stat.exists
+  
+- name: Set Powerline10k as zsh theme
+  lineinfile:
+    path: ~/.zshrc
+    regexp: '^ZSH_THEME='
+    line: 'ZSH_THEME="powerlevel10k/powerlevel10k"'
+    state: present
+
+- name: Set Powerline10k config file
+  ansible.builtin.copy:
+    src: ../files/p10k.zsh
+    dest: "/home/{{ user }}/.p10k.zsh"
+
+- name: "Lua: install lua for z (directory jump)"
+  become: true #needed
+  become_user: root
+  apt: 
+    name: lua5.4
+    state: latest

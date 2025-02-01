@@ -1,0 +1,26 @@
+---
+- name: Install prerequisites for the dconf module
+  ansible.builtin.package:
+    name: python3-psutil
+    state: latest
+  become: true
+
+- name: "Install dconf editor"
+  become: true #needed
+  become_user: root
+  apt:
+    name: dconf-editor
+    
+- name: Install gnome extensions manager
+  become: true #needed
+  become_user: root
+  apt:
+    name: gnome-shell-extension-manager
+    state: latest
+
+- name: Install gnome tweaks
+  become: true #needed
+  become_user: root
+  apt:
+    name: gnome-tweaks
+    state: latest

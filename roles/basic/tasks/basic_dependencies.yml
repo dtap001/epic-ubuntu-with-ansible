@@ -1,0 +1,28 @@
+---
+- name: "Python3: Install the python"
+  become: true #needed
+  become_user: root
+  apt:
+    name: python3
+    state: latest
+
+- name: "Python3: Install the python"
+  become: true #needed
+  become_user: root
+  apt:
+    name: python3-pip
+    state: latest
+
+- name: "Python3: ensure pipx"
+  become: true #needed
+  become_user: root
+  apt:
+    name: pipx
+    state: latest
+
+- name: "Python3: Install psutil"
+  become: true #needed
+  become_user: root
+  apt:
+    name: python3-psutil
+    state: latest

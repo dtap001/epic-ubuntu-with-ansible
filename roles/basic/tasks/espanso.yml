@@ -1,0 +1,77 @@
+---
+- name: "Espanso: check if installed"
+  stat:
+    path: "/usr/bin/espansox"
+  register: espanso_installed
+
+- name: "Espanso: download "
+  ansible.builtin.get_url:
+    url:  https://github.com/federico-terzi/espanso/releases/download/v2.2.1/espanso-debian-x11-amd64.deb
+    dest: /tmp/espanso.deb
+  when: not espanso_installed.stat.exists
+
+- name: "Espanso: dpkg install"
+  shell:
+    cmd: apt install -y --fix-broken /tmp/espanso.deb
+  ignore_errors: true
+  changed_when: false
+  become: true #needed
+  become_user: root
+  when: not espanso_installed.stat.exists
+
+- name: "Espanso: add github to known hosts"
+  shell:
+    cmd: ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
+  ignore_errors: true
+  changed_when: false
+  when: not espanso_installed.stat.exists
+
+- name: "Espanso: service restart"
+  shell:
+    cmd: espanso service register && espanso start
+  ignore_errors: true
+  when: not espanso_installed.stat.exists
+
+- name: "Espanso: Create config  directory if it does not exist"
+  ansible.builtin.file:
+    path: "/home/{{ user }}/.config/espanso/config/"
+    state: directory
+    mode: '0755'
+
+- name: "Espanso: configure basic config"
+  ansible.builtin.copy:
+    src: ../files/espanso.default.yml
+    dest: "/home/{{ user }}/.config/espanso/config/default.yml"
+  ignore_errors: true
+  when: not espanso_installed.stat.exists
+
+- name: "Get list of installed espanso packages"
+  shell: espanso package list
+  register: installed_packages
+  changed_when: false
+
+- name: "Espanso: adding packages if not installed"
+  shell:
+    cmd: espanso install {{ item.name }} --git {{ item.repo }} --external
+  with_items: "{{ espanso_packages }}"
+  when: 
+    - espanso_packages is defined
+    - item.repo not in installed_packages.stdout
+
+- name: "Espanso: global summon"
+  community.general.dconf:
+    key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom6/name"
+    value: "'espanso'"
+  
+
+- name: "Espanso: global summon"
+  community.general.dconf:
+    key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom6/binding"
+    value: "'<Primary>q'"
+  
+
+- name: "Espanso: global summon"
+  community.general.dconf:
+    key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom6/command"
+    value: "'espanso cmd search'"
+  

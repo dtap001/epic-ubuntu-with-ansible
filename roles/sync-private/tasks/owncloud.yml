@@ -1,0 +1,28 @@
+---
+- name: "Owncloud: Install GPG key for"
+  become: true #needed
+  become_user: root
+  apt_key:
+    url: https://download.owncloud.com/desktop/ownCloud/stable/latest/linux/Ubuntu_22.04/Release.key
+    state: present
+
+- name: "Owncloud:  add repo"
+  become: true #needed
+  become_user: root
+  apt_repository:
+    repo: deb {{ item.repo }} {{ item.add }}
+    state: present
+    filename: "{{ item.file }}"
+  with_items:
+    - repo: https://download.owncloud.com/desktop/ownCloud/stable/latest/linux/Ubuntu_22.04/
+      add: /
+      file: owncloud-client
+
+- name: "Owncloud: Install"
+  become: true #needed
+  become_user: root
+  package:
+    name: '{{item.name}}'
+    state: latest
+  with_items:
+    - { name: 'owncloud-client' }

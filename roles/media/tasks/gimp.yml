@@ -1,0 +1,7 @@
+---
+- name: "Gimp: isntall"
+  become: true #needed
+  become_user: root
+  apt:
+    name: gimp
+    state: latest

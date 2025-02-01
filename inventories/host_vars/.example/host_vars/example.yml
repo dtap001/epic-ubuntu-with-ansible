@@ -1,0 +1,37 @@
+user: example
+user_email: example@gmail.com
+
+basic_role_enabled: true
+gnome_role_enabled: true
+development_role_enabled: true
+media_role_enabled: true
+messaging_role_enabled: true
+sync_role_enabled: true
+sync_private_role_enabled: true
+warez_role_enabled: true
+virtualization_docker_role_enabled: true
+virtualization_virtualbox_role_enabled: true
+virtualization_k3d_role_enabled: true
+
+ssh_key_path: ~/.ssh/ssh_key_generated_by_ansible
+ssh_key_email: "{{ user_email }}"
+
+oh_my_zsh_url_download: https://github.com/robbyrussell/oh-my-zsh
+oh_my_zsh_theme : robbyrussell
+oh_my_zsh_export: "/home/{{ user }}/.oh-my-zsh"
+oh_my_zsh_plugins: git zsh-autosuggestions fzf zsh-syntax-highlighting
+oh_my_zsh_custom_dir_plugins: /home/{{ user }}/.oh-my-zsh/custom/plugins
+oh_my_zsh_extra: |-
+  # Config tilix
+  if [ $TILIX_ID ] || [ $VTE_VERSION ]; then
+  source /etc/profile.d/vte-2.91.sh
+  fi
+  
+  # Alias
+  alias ll="ls -lah"
+  
+  export PATH=~/.local/bin:$PATH
+  [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+other_ssh_hosts: []
+extra_ssh_hosts: []

@@ -1,0 +1,56 @@
+---
+- name: "LazyGit: Check if lazygit already installed"
+  stat:
+    path: "/usr/local/bin/lazygit"
+  register: is_lazygit_installed
+
+- name: "LazyGit: Get the latest LazyGit version"
+  ansible.builtin.shell:
+    cmd: >
+      curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*'
+  register: lazygit_version
+  when: not is_lazygit_installed.stat.exists
+
+- name: "LazyGit: Define LazyGit version as a fact"
+  set_fact:
+    LAZYGIT_VERSION: "{{ lazygit_version.stdout }}"
+  when: not is_lazygit_installed.stat.exists
+
+- name: "LazyGit: Download LazyGit tar.gz file"
+  become: true #needed
+  become_user: root  
+  ansible.builtin.get_url:
+    url: "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_{{ LAZYGIT_VERSION }}_Linux_x86_64.tar.gz"
+    dest: "/tmp/lazygit.tar.gz"
+  when: not is_lazygit_installed.stat.exists
+
+- name: "LazyGit: Extract LazyGit binary"
+  become: true #needed
+  become_user: root  
+  ansible.builtin.unarchive:
+    src: "/tmp/lazygit.tar.gz"
+    dest: "/tmp"
+    remote_src: yes
+  when: not is_lazygit_installed.stat.exists
+
+- name: "LazyGit: Install LazyGit binary"
+  become: true #needed
+  become_user: root  
+  ansible.builtin.copy:
+    src: "/tmp/lazygit"
+    dest: "/usr/local/bin/lazygit"
+    mode: '0755'
+  when: not is_lazygit_installed.stat.exists
+
+- name: "LazyGit: Clean up LazyGit tar.gz file"
+  become: true #needed
+  become_user: root  
+  ansible.builtin.file:
+    path: "/tmp/lazygit.tar.gz"
+    state: absent
+  when: not is_lazygit_installed.stat.exists
+
+- name: "LazyGit: Udpdate config file"
+  template:
+    src: ../templates/lazy-git.config.config.yml.j2
+    dest: "/home/{{ user }}/.config/lazygit/config.yml"

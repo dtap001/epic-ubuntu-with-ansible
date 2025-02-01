@@ -1,0 +1,49 @@
+---
+- name: Ensure PercentageCritical is 10%
+  become: true #needed
+  become_user: root
+  ansible.builtin.lineinfile:
+    path: /etc/UPower/UPower.conf
+    regexp: '^PercentageCritical'
+    line: PercentageCritical=10
+  register: PercentageCritical
+
+- name: Ensure PercentageAction is HybridSleep
+  become: true #needed
+  become_user: root
+  ansible.builtin.lineinfile:
+    path: /etc/UPower/UPower.conf
+    regexp: '^PercentageAction'
+    line: PercentageAction=HybridSleep
+  register: PercentageAction
+    
+- name: Restart upower.service
+  become: true #needed
+  become_user: root
+  ansible.builtin.systemd:
+    state: restarted
+    daemon_reload: true
+    name: upower.service
+  when: PercentageAction.changed or PercentageCritical.changed
+
+
+# - name: "LidClose action on external power"
+#   ansible.builtin.lineinfile:
+#     path: /etc/systemd/logind.conf
+#     regexp: '^HandleLidSwitchExternalPower'
+#     line: HandleLidSwitchExternalPower=suspend
+#   register: handleLidSwitchOnExternalPower
+
+# - name: "LidClose action on battery"
+#   ansible.builtin.lineinfile:
+#     path: /etc/systemd/logind.conf
+#     regexp: '^HandleLidSwitch'
+#     line: HandleLidSwitch=suspend
+#   register: HandleLidSwitchOnBattery
+
+# - name: "Restart logind for lid actions"
+#   ansible.builtin.systemd:
+#     state: restarted
+#     daemon_reload: true
+#     name: systemd-logind.service
+#   when: handleLidSwitchOnExternalPower.changed or HandleLidSwitchOnBattery.changed

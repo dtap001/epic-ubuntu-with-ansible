@@ -1,0 +1,16 @@
+- name: "Wake Prevent: ensure scripts folder"
+  file: 
+    path: "/home/{{ user }}/scripts/"
+    state: directory
+
+- name: "Wake Prevent: copy script"
+  ansible.builtin.copy:
+    src: wake-prevent.sh
+    dest: "/home/{{ user }}/scripts/wake-prevent.sh"
+
+- name: "Wake Prevent: add crontab entry"
+  become: true
+  ansible.builtin.cron:
+    name: "Prevent usb wake"
+    minute: "*/5"
+    job: "bash /home/{{ user }}/scripts/wake-prevent.sh"

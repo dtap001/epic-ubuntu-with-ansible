@@ -1,0 +1,27 @@
+---
+- name: "InSync: Add Apt Keys"
+  become: true #needed
+  become_user: root
+  apt_key: keyserver=hkp://keyserver.ubuntu.com:80 id=ACCAF35C state=present
+
+- name: "InSync: Add repository"
+  become: true #needed
+  become_user: root
+  apt_repository: repo='deb http://apt.insync.io/ubuntu/ jammy  non-free contrib'
+
+- name: "InSync: Install"
+  become: true #needed
+  become_user: root
+  apt: name=insync update_cache=yes state=latest
+
+- name: Ensure config folder exists
+  ansible.builtin.file:
+    path: "/home/{{ user }}/.config/autostart"
+    state: directory
+
+- name: Ensure autostart
+  ansible.builtin.copy:
+    src: "/usr/share/applications/insync.desktop"
+    dest: "/home/{{ user }}/.config/autostart"
+    mode: u+rwx,g-r,o-r
+    owner: "{{ user }}"

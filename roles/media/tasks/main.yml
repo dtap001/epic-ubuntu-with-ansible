@@ -1,0 +1,5 @@
+---
+- include_tasks: spotify.yml
+- include_tasks: obsidian.yml
+- include_tasks: vlc.yml
+- include_tasks: gimp.yml

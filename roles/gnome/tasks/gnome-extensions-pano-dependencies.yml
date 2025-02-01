@@ -1,0 +1,15 @@
+---
+
+- name: "Gnome-extension Pano depdencenies: gir1.2-gsound-1.0"
+  become: true #needed
+  become_user: root
+  apt:
+    name: gir1.2-gsound-1.0
+    state: latest
+
+- name: "Gnome-extension Pano depdencenies: gir1.2-gda-5.0"
+  become: true #needed
+  become_user: root
+  apt:
+    name: gir1.2-gda-5.0
+    state: latest

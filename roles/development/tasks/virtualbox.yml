@@ -1,0 +1,13 @@
+---
+- name: "Installing Virtualbox"
+  become: true #needed
+  become_user: root
+  apt:
+    name: virtualbox
+    state: latest
+- name: "Intstalling virtualbox—ext-pack"
+  become: true #needed
+  become_user: root
+  apt:
+    name: virtualbox—ext-pack
+    state: latest

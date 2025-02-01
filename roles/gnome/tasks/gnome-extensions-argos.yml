@@ -1,0 +1,42 @@
+#https://github.com/matryer/xbar-plugins?from=getbitbar.com&dest=
+---
+- name: "Argos: check if installed"
+  stat:
+    path: "/home/{{user}}/.local/share/gnome-shell/extensions/argos-gnome-42"
+  register: is_argos_installed
+
+- name: "Argos: ensure folder"
+  ansible.builtin.file:
+    path: "/home/{{user}}/.local/share/gnome-shell/extensions"
+    state: "directory"
+  
+- name: "Argos: copy"
+  ansible.builtin.unarchive:
+    src: "argos@pew.worldwidemann.com.zip" # source: https://github.com/Coda-Coda/argos
+    dest: "/home/{{user}}/.local/share/gnome-shell/extensions"
+    remote_src: false
+  when: not is_argos_installed.stat.exists
+
+# - name: "Argos: fix folder structure"
+#   ansible.builtin.file:
+#     src: /apps/kui/Kui
+#     dest: /usr/local/bin/kui
+#     owner: '{{ user}}'
+#     group: '{{ user}}'
+#   when: not is_argos_installed.stat.exists
+
+- name: "Argos: Ensure config folder exists"
+  ansible.builtin.file:
+    src: "{{ role_path }}/files/argos-scripts"
+    dest: /home/{{user}}/.config/argos
+    owner: '{{ user}}'
+    group: '{{ user}}'
+    state: link
+  when: not is_argos_installed.stat.exists
+
+
+# - name: "Argos: enable extension"  
+#   ansible.builtin.command: gnome-extensions enable argos@pew.worldwidemann.com
+#   when: not is_argos_installed.stat.exists
+
+#fatal: [testvm]: FAILED! => {"changed": true, "cmd": ["gnome-extensions", "enable", "argos@pew.worldwidemann.com"], "delta": "0:00:00.290515", "end": "2024-10-24 13:58:29.233199", "msg": "non-zero return code", "rc": 2, "start": "2024-10-24 13:58:28.942684", "stderr": "Extension “argos@pew.worldwidemann.com” does not exist", "stderr_lines": ["Extension “argos@pew.worldwidemann.com” does not exist"], "stdout": "", "stdout_lines": []}

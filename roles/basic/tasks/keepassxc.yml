@@ -1,0 +1,33 @@
+---
+- name: "KeepassXC: Install "
+  become: true
+  become_user: root
+  package:
+    name: '{{item.name}}'
+    state: latest
+  with_items:
+    - { name: 'keepassxc' }
+
+- name: "KeepassXC: Ensure autostart folder exists"
+  ansible.builtin.file:
+    path: "/home/{{ user }}/.config/autostart"
+    state: directory
+
+- name: "KeepassXC: Ensure autostart"
+  ansible.builtin.copy:
+    src: "/usr/share/applications/org.keepassxc.KeePassXC.desktop"
+    dest: "/home/{{ user }}/.config/autostart"
+    mode: u+rwx,g-r,o-r
+    owner: "{{ user }}"
+
+- name: "KeepassXC: Ensure config folder exists"
+  ansible.builtin.file:
+    path: "/home/{{ user }}/.config/keepassxc"
+    state: directory
+  become: true
+  
+
+- name: "KeepassXC: Update config file "
+  template:
+    src: ../templates/keepassxc.ini.j2
+    dest: "/home/{{ user }}/.config/keepassxc/keepassxc.ini"

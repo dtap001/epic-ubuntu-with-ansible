@@ -1,0 +1,60 @@
+---
+- name: Check if az installed already exists
+  stat:
+    path: "/opt/az"
+  register: is_az_installed
+
+- name: "Install az-cli"
+  ansible.builtin.shell: "curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash"
+  when: not is_az_installed.stat.exists
+
+- name: Check if kubectl installed
+  stat:
+    path: "/usr/local/bin/kubectl"
+  register: is_kubectl_installed
+
+- name: "Download kubectl"
+  ansible.builtin.shell: curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+  when: not is_kubectl_installed.stat.exists
+
+- name: "Install kubectl"
+  ansible.builtin.shell: "sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl"
+  when: not is_kubectl_installed.stat.exists
+
+- name: "Terraform: add GPG key"
+  become: true #needed
+  become_user: root
+  apt_key:
+    url: https://apt.releases.hashicorp.com/gpg
+    state: present
+
+- name: "Terraform:  add repo"
+  become: true #needed
+  become_user: root
+  apt_repository: 
+    repo: 'deb https://apt.releases.hashicorp.com jammy main'
+    filename: 'hashicorp.list'
+    state: present
+
+- name: "Terraform: install"
+  become: true #needed
+  become_user: root
+  apt:
+    update_cache: true
+    name: terraform
+    state: latest
+
+- name: "K9s: install"
+  shell:  
+    cmd: /home/linuxbrew/.linuxbrew/bin/brew install k9s
+
+- name: "Navi: install"
+  shell:  
+    cmd: /home/linuxbrew/.linuxbrew/bin/brew install navi
+
+- name: "SVN: install"
+  become: true #needed
+  become_user: root
+  apt:
+    name: subversion
+    state: latest

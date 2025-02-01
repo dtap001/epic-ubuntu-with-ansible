@@ -1,0 +1,67 @@
+--- #https://docs.ansible.com/ansible/2.8/modules/git_config_module.html
+- name: Setting git email to {{ git_email }}
+  git_config:  
+    scope: global
+    name: user.email
+    value: "{{ git_email }}"
+  become: true
+
+- name: "Setting git user name to : {{ git_username }}"
+  git_config:  
+    scope: global
+    name: user.name
+    value: "{{ git_username }}"
+  become: true
+  
+- name: "GitKraken: check if installed"
+  stat:
+    path: "/usr/bin/gitkraken"
+  register: git_kraken_installed
+
+- name: "GitKraken: download "
+  ansible.builtin.get_url:
+    url: https://release.axocdn.com/linux/gitkraken-amd64.deb
+    dest: /tmp/git_kraken.deb
+  when: not git_kraken_installed.stat.exists
+
+- name: "GitKraken: install"
+  shell:
+    cmd: dpkg -i /tmp/git_kraken.deb
+  ignore_errors: true
+  changed_when: false
+  when: not git_kraken_installed.stat.exists
+  become: true #needed
+  become_user: root
+
+- name: "Git-Delta: Check if already installed"
+  stat:
+    path: "/usr/bin/delta"
+  register: is_delta_installed
+
+- name: "Git-Delta: Get the latest version"
+  ansible.builtin.shell: |
+    curl -s https://api.github.com/repos/dandavison/delta/releases/latest | jq -r '.tag_name'
+  register: delta_version
+  when: not is_delta_installed.stat.exists
+  changed_when: false
+
+- name: "Git-Delta: Download "
+  ansible.builtin.get_url:
+    url: "https://github.com/dandavison/delta/releases/latest/download/git-delta_{{ delta_version.stdout }}_amd64.deb"
+    dest: "/tmp/delta.deb"
+  when: not is_delta_installed.stat.exists
+
+- name: "Git-Delta: dpkg -i"
+  become: true # needed
+  become_user:  'root'
+  ansible.builtin.shell:
+    cmd: "dpkg -i /tmp/delta.deb"
+  when: not is_delta_installed.stat.exists
+
+- name: "Git-Delta: Clean up /tmp/delta.deb"
+  become: true #needed
+  become_user: root
+  ansible.builtin.file:
+    path: "/tmp/delta.deb"
+    state: absent
+  when: not is_delta_installed.stat.exists

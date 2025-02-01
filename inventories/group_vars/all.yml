@@ -1,0 +1,10 @@
+ansible_connection: local
+oh_my_zsh_custom_plugins:
+  - repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
+    dest: "{{ oh_my_zsh_custom_dir_plugins }}/zsh-syntax-highlighting"
+  - repo: https://github.com/zsh-users/zsh-autosuggestions.git
+    dest: "{{ oh_my_zsh_custom_dir_plugins }}/zsh-autosuggestions"
+  - repo: https://github.com/MichaelAquilina/zsh-you-should-use.git
+    dest: "{{ oh_my_zsh_custom_dir_plugins }}/you-should-use"  
+  - repo: https://github.com/skywind3000/z.lua.git
+    dest: "{{ oh_my_zsh_custom_dir_plugins }}/z"

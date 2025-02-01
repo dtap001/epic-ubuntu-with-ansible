@@ -1,0 +1,26 @@
+---
+- name: "Node: check if gpg key downloaded"
+  stat:
+    path: "/etc/apt/keyrings/nodesource.gpg"
+  register: gpg_key_stat
+
+- name: "Node: download gpg key"
+  ansible.builtin.shell: curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+  when: not gpg_key_stat.stat.exists
+
+- name: "Node: check if source list exists"
+  stat:
+    path: "/etc/apt/sources.list.d/nodesource.list"
+  register: source_list_exists
+
+- name: "Node: create source list"
+  ansible.builtin.shell: echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
+  when: not source_list_exists.stat.exists  
+
+- name: "Node: Install the nodejs"
+  become: true #needed
+  become_user: root
+  apt:
+    update_cache: true
+    name: nodejs
+    state: latest

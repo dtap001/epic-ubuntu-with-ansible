@@ -1,0 +1,21 @@
+---
+- name: Install telegram-desktop
+  become: true #needed
+  become_user: root
+  package:
+    name: '{{item.name}}'
+    state: latest
+  with_items:
+    - { name: 'telegram-desktop' }
+
+- name: Ensure config folder exists
+  ansible.builtin.file:
+    path: "/home/{{ user }}/.config/autostart"
+    state: directory
+
+- name: Ensure autostart
+  ansible.builtin.copy:
+    src: "/usr/share/applications/telegramdesktop.desktop"
+    dest: "/home/{{ user }}/.config/autostart"
+    mode: u+rwx,g-r,o-r
+    owner: "{{ user }}"

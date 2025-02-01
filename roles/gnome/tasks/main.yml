@@ -1,0 +1,6 @@
+- include_tasks: gnome-extensions-argos.yml
+- include_tasks: gnome-extensions-pano-dependencies.yml
+- include_tasks: gnome-customize.yml
+- include_tasks: gnome-icons.yml
+- include_tasks: gnome-theme.yml
+- include_tasks: gnome-extensions-gsnap.yml

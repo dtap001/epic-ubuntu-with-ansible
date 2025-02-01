@@ -1,0 +1,145 @@
+---
+- name: Install rofi
+  become: true #needed
+  become_user: root
+  apt:
+    name: rofi
+    state: latest
+
+- name: Ensure rofi config folder exists
+  ansible.builtin.file:
+    path: "/home/{{ user }}/.config/rofi"
+    state: directory
+  become: true
+  
+
+- name: Check that the /home/{{ user }}/.config/rofi/config.rasi" exists
+  stat:
+    path: /home/{{ user }}/.config/rofi/config.rasi"
+  register: rofi_config_file_stat
+
+- name: Create the file, if it doesnt exist already
+  file:
+    path: /home/{{ user }}/.config/rofi/config.rasi"
+    state: touch
+  when: not rofi_config_file_stat.stat.exists
+  become: true
+  
+- name: Udpdate config file
+  template:
+    src: ../templates/rofi.config.rasi.j2
+    dest: "/home/{{ user }}/.config/rofi/config.rasi"
+  become: true
+  
+- name: "Rofi: global summon: window"
+  community.general.dconf:
+    key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/binding"
+    value: "'<Super>w'"
+  
+
+- name: "Rofi: global summon: window"
+  community.general.dconf:
+    key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/command"
+    value: "'rofi -show window -dpi 1 -terminal kitty'"
+  
+
+- name: "Rofi: global summon: window"
+  community.general.dconf:
+    key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/name"
+    value: "'rofi window summon'"
+  
+
+- name: "Rofi: global summon: ssh"
+  community.general.dconf:
+    key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/binding"
+    value: "'<Super>s'"
+  
+
+- name: "Rofi: global summon: ssh"
+  community.general.dconf:
+    key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/command"
+    value: "'rofi -show ssh -dpi 1 -terminal kitty'"
+  
+
+- name: "Rofi: global summon: ssh"
+  community.general.dconf:
+    key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/name"
+    value: "'rofi ssh summon'"
+  
+
+- name: "Rofi: global summon: filebrowser"
+  community.general.dconf:
+    key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/binding"
+    value: "'<Super>f'"
+  
+
+- name: "Rofi: global summon: filebrowser"
+  community.general.dconf:
+    key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/command"
+    value: "'rofi -show filebrowser -dpi 1 -terminal kitty'"
+  
+
+- name: "Rofi: global summon: filebrowser"
+  community.general.dconf:
+    key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/name"
+    value: "'rofi file summon'"
+  
+
+- name: "Rofi: global summon: combi"
+  community.general.dconf:
+    key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3/binding"
+    value: "'<Primary>space'"
+  
+
+- name: "Rofi: global summon: combi"
+  community.general.dconf:
+    key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3/command"
+    value: "'rofi -show combi -combi-modes \"window,run,ssh,drun\" -modes combi -dpi 1 -terminal kitty'"
+  
+
+- name: "Rofi: global summon: combi"
+  community.general.dconf:
+    key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3/name"
+    value: "'rofi combi summon'"
+  
+
+- name: "Rofimoji: ensure wtype installed as dependency"
+  become: true #needed
+  become_user: root
+  apt:
+    name: wtype
+    state: absent
+
+- name: "Rofimoji: ensure xdotool installed as dependency"
+  become: true #needed
+  become_user: root
+  apt:
+    name: xdotool
+    state: latest
+
+- name: "Rofimoji: install"
+  ansible.builtin.shell: pipx install rofimoji
+  
+
+- name: "Rofimoji: global summon shortcut binding"
+  community.general.dconf:
+    key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom4/binding"
+    value: "'<Super>period'"
+  
+
+- name: "Rofimoji: global summon shortcut command"
+  community.general.dconf:
+    key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom4/command"
+    value: "'rofimoji'"
+  
+
+- name: "Rofimoji: global summon shortcut name"
+  community.general.dconf:
+    key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom4/name"
+    value: "'Rofimoji summon'"
+  
+
+- name: "Rofimoji: copy config"
+  ansible.builtin.copy:
+    src: rofimoji.rc
+    dest: "/home/{{ user }}/.config/rofimoji.rc"

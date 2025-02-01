@@ -1,0 +1,32 @@
+---
+# - name: "Papirus: copy file"
+#   ansible.builtin.copy:
+#     src: papirus-icons.tar.gz
+#     dest: "/tmp/papirus-icons.tar.gz"
+
+# - name: "Papirus: ensure folder"
+#   ansible.builtin.file:
+#     path: "/home/{{ user }}/.themes"
+#     state: "directory"
+#   
+
+# - name: "Papirus: Unzip"
+#   ansible.builtin.unarchive:
+#     src: "/tmp/papirus-icons.tar.gz"
+#     dest: "/home/{{ user }}/.themes"
+#     remote_src: false
+#   
+
+
+- name: Install papirus
+  become: true #needed
+  become_user: root
+  apt:
+    name: papirus-icon-theme
+    state: latest
+
+- name: "Papirus: gsettings gtk enable"
+  ansible.builtin.command:
+    cmd: gsettings set org.gnome.desktop.interface icon-theme "ePapirus-Dark"
+  
+  changed_when: false

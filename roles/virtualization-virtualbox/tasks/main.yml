@@ -1,0 +1,23 @@
+---
+- name: "Virtualbox: install"
+  become: true #needed
+  become_user: root
+  apt:
+    state: latest
+    name: virtualbox
+
+- name: Pre-accept VirtualBox extension pack license
+  become: true #needed
+  become_user: root
+  debconf:
+    name: "virtualbox-ext-pack"
+    question: "virtualbox-ext-pack/license"
+    value: "true"
+    vtype: "select"
+
+- name: "Virtualbox: install extension pack"
+  become: true #needed
+  become_user: root
+  apt:
+    state: latest
+    name: virtualbox-ext-pack

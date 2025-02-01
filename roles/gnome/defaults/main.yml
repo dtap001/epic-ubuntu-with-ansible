@@ -1,0 +1,177 @@
+---
+gnome_dconf:
+  - key: /org/gnome/desktop/background/show-desktop-icons
+    value: "false"
+
+  - key: "/org/gnome/desktop/interface/show-battery-percentage"
+    value: "true"
+  - key: "/org/gnome/desktop/session/idle-delay"
+    value: "160"
+  - key: "/org/gnome/desktop/screensaver/lock-delay"
+    value: "3600"
+  - key: "/org/gnome/desktop/screensaver/lock-enabled"
+    value: "false"
+  - key: /org/gnome/shell/extensions/dash-to-dock-pop/pressure-threshold
+    value: "0.0"
+  - key: /org/gnome/shell/extensions/dash-to-dock-pop/background-opacity
+    value: "0.8"
+  - key: /org/gnome/shell/extensions/dash-to-dock-pop/border-radius
+    value: "15"  
+  - key: /org/gnome/settings-daemon/plugins/color/night-light-schedule-from 
+    value: "17.0"  
+  - key: /org/gnome/settings-daemon/plugins/color/night-light-schedule-to     
+    value: "7"  
+  - key: /org/gnome/settings-daemon/plugins/color/night-light-schedule-automatic
+    value: "false"
+  - key: /org/gnome/shell/extensions/dash-to-dock-pop/dash-max-icon-size
+    value: "18"
+  - key: /org/gnome/shell/extensions/dash-to-dock-pop/dock-position
+    value: "'BOTTOM'"
+  - key: /org/gnome/shell/extensions/dash-to-dock-pop/transparency-mode
+    value: "'FIXED'"
+  - key: /org/gnome/shell/extensions/dash-to-dock-pop/running-indicator-style
+    value: "'DOTS'"
+  - key: /org/gnome/shell/extensions/dash-to-dock-pop/dock-alignment
+    value: "'CENTRE'"
+  - key: /org/gnome/shell/extensions/dash-to-dock-pop/custom-theme-shrink
+    value: "true"
+  - key: /org/gnome/shell/extensions/dash-to-dock-pop/dock-fixed
+    value: "true"
+  - key: /org/gnome/shell/extensions/dash-to-dock-pop/click-action
+    value: "'minimize-or-previews'"
+
+  - key: /org/gnome/shell/extensions/pano/send-notification-on-copy
+    value: "false"
+  - key: /org/gnome/shell/extensions/pano/play-audio-on-copy
+    value: "false"  
+  - key: /org/gnome/shell/extensions/pano/show-indicator
+    value: "false"  
+  - key: /org/gnome/shell/extensions/pano/open-links-in-browser
+    value: "false"  
+  - key: /org/gnome/shell/extensions/pano/keep-search-entry
+    value: "false"  
+  - key: /org/gnome/shell/extensions/pano/link-preview
+    value: "false"
+  - key: /org/gnome/shell/extensions/pano/global-shortcut
+    value: "['<Shift><Control>v']"
+  - key: /org/gnome/shell/extensions/pano/history-length
+    value: "500"
+  - key: /org/gnome/shell/extensions/pano/paste-on-select
+    value: "true"
+  - key: /org/gnome/shell/extensions/pano/sync-primary
+    value: "true"
+  - key: "/org/gnome/shell/extensions/pano/active-item-border-color"
+    value: "'rgb(165,29,45)'"
+
+  - key: "/org/gnome/desktop/interface/clock-show-seconds"
+    value: "true"
+
+  - key: "/org/gnome/shell/extensions/cpupower/show-freq-in-taskbar"
+    value: "true"
+
+  - key: "/org/gnome/shell/extensions/openweather/position-index"
+    value: "1"
+  - key: "/org/gnome/shell/extensions/openweather/show-comment-in-panel"
+    value: "false"
+
+  - key: "/org/gnome/shell/extensions/mpris-label/extension-index"
+    value: "6"
+  - key: "/org/gnome/shell/extensions/mpris-label/extension-place"
+    value: "'left'"
+  - key: "/org/gnome/shell/extensions/mpris-label/left-padding"
+    value: "5"
+  - key: "/org/gnome/shell/extensions/mpris-label/right-padding"
+    value: "5"
+  - key: "/org/gnome/shell/extensions/mpris-label/left-click-action"
+    value: "'next-track'"
+
+  - key: "/org/gnome/shell/extensions/vitals/hot-sensors"
+    value: "['_memory_usage_', '__network-rx_max__', '__temperature_avg__']"
+  - key: "/org/gnome/shell/extensions/vitals/show-battery"
+    value: "true"
+
+  - key: "/org/gnome/shell/extensions/user-theme/name"
+    value: "'Nordic-darker-v40'"
+
+  - key: "/org/gnome/desktop/sound/event-sounds"
+    value: "false"
+
+  - key: "/org/gnome/nautilus/preferences/show-hidden-files"
+    value: "true"
+  - key: "/org/gnome/FileRoller/FileSelector/show-hidden"
+    value: "true"
+  - key: "/org/gtk/Settings/FileChooser/show-hidden"
+    value: "true"
+  - key: "/org/gtk/gtk4/Settings/FileChooser/show-hidden"
+    value: "true"
+
+gnome_extensions:
+  - id: 19
+    name: user-theme@gnome-shell-extensions.gcampax.github.com
+    enabled: yes
+  - id: 1460
+    name: Vitals@CoreCoding.com
+    enable: yes
+  - id: 5278
+    name: pano@elhan.io
+    enable: yes
+  - id: 945
+    name: cpupower@mko-sl.de
+    enable: yes
+  - id: 5103
+    name: docker@stickman_0x00.com
+    enable: yes
+  - id: 750
+    name: openweather-extension@jenslody.de
+    enable: yes
+  - id: 5004
+    name: dash-to-dock-cosmic-@halfmexicanhalfamazing@gmail.com
+    enable: yes
+  - id: 4928
+    name: mprisLabel@moon-0xff.github.com
+    enable: yes
+  - id: 751
+    name: audio-output-switcher@anduchs
+    enable: yes
+  - id: 4033
+    name: x11gestures@joseexposito.github.io
+    enabled: no
+  - id: 4442
+    name: gSnap@micahosborne
+    enabled: yes
+  - id: 1401
+    name: bluetooth-quick-connect@bjarosze.gmail.com
+    enabled: yes
+  - id: 5368
+    name: places-menu@gnome-shell-extensions.gcampax.github.com
+    enabled: yes
+  - id: 7
+    name: drive-menu@gnome-shell-extensions.gcampax.github.com
+    enabled: yes
+  - id: 4491
+    name: PrivacyMenu@stuarthayhurst
+    enabled: no
+  - id: 2932
+    name: executor@raujonas.github.io
+    enabled: yes  
+  - id: 4245
+    name: gestureImprovements@gestures
+    enabled: no
+# gnome_files:
+#   - src: gtk.css
+#     dest: "/home/{{ gnome_user }}/.config/{{ gtk_version }}/gtk.css"
+# gnome_fonts:
+#   - url: https://github.com/adobe-fonts/source-code-pro/archive/2.030R-ro/1.050R-it.zip
+#     name: SourceCodePro
+#     fonts: "source-code-pro-2.030R-ro-1.050R-it/OTF/*.otf"
+#gnome_gsettings:
+# - schema: org.gnome.desktop.interface
+#   key: monospace-font-name
+#   value: '"Source Code Pro Medium 16"'
+# - schema: org.gnome.shell.extensions.dash-to-panel
+#   schemadir: ~/.local/share/gnome-shell/extensions/dash-to-panel@jderose9.github.com/schemas
+#   key: panel-position
+#   value: TOP
+# gnome_packages:
+#   - fonts-roboto
+#gtk_version: 3.0

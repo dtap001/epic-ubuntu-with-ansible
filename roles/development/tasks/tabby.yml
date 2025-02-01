@@ -1,0 +1,27 @@
+---
+- name: "Tabby: check if repo added"
+  stat:
+    path: "/etc/apt/sources.list.d/eugeny_tabby.list"
+  register: is_tabby_repo_added
+
+- name: "Tabby: repo add"
+  ansible.builtin.shell: "curl -s https://packagecloud.io/install/repositories/eugeny/tabby/script.deb.sh | sudo bash"
+  when: not is_tabby_repo_added.stat.exists
+
+- name: "Tabby: install"
+  become: true #needed
+  become_user: root
+  apt:
+    name: tabby-terminal
+    state: latest
+
+- name: "Tabby: Create config  directory if it does not exist"
+  ansible.builtin.file:
+    path: "/home/{{ user }}/.config/tabby/"
+    state: directory
+    mode: '0755'
+
+- name: "Tabby: configure"
+  template:
+    src: ../templates/tabby.config.yaml.j2
+    dest: "/home/{{ user }}/.config/tabby/config.yaml"

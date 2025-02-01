@@ -1,0 +1,8 @@
+{{ other_ssh_hosts }}
+{% for host in extra_ssh_hosts %}
+Host {{ host.host | default(host.hostname) }}
+    HostName {{ host.hostname }}
+    User {{ host.user }}
+    Port {{ host.port | default('22') }}
+    StrictHostKeyChecking no
+{% endfor %}

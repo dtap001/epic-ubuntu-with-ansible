@@ -1,0 +1,9 @@
+---
+- name: Install spotify snap
+  community.general.snap:
+    name: spotify
+    state: present
+    classic: true
+  become: true
+  become_user: root #needed
+

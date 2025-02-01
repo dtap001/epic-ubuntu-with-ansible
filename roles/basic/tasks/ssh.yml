@@ -1,0 +1,27 @@
+---
+- name: "SSH config: Update config file"
+  template:
+    src: "../templates/ssh.config.j2"
+    dest: "/home/{{ user }}/.ssh/config"
+
+- name: Check if public key {{ ssh_key_path }}-rsa.pub already exists
+  stat:
+    path: "{{ ssh_key_path }}-rsa.pub"
+  register: ssh_public_key_stat_rsa
+  become: true
+
+- name: Generate key rsa
+  command: ssh-keygen -t rsa -N "" -C "{{ ssh_key_email }}" -f {{ ssh_key_path }}-rsa
+  become: true
+  when: not ssh_public_key_stat_rsa.stat.exists
+
+- name: Start ssh agent
+  shell: "eval $(ssh-agent -s)"
+  become_user: root
+  become: true
+  when: not ssh_public_key_stat_rsa.stat.exists
+
+- name: Add private  rsa key to ssh-agent
+  command: ssh-add {{ ssh_key_path }}-rsa
+  become: true
+  when: not ssh_public_key_stat_rsa.stat.exists

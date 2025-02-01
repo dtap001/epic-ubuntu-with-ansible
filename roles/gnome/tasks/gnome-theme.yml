@@ -1,0 +1,30 @@
+---
+- name: "Nordic: copy file"
+  ansible.builtin.copy:
+    src: Nordic-darker.tar.xz
+    dest: "/tmp/Nordic-darker.tar.xz"
+
+- name: "Nordic: ensure folder"
+  ansible.builtin.file:
+    path: "/home/{{ user }}/.themes"
+    state: "directory"
+  
+
+- name: "Nordic: Unzip"
+  ansible.builtin.unarchive:
+    src: "/tmp/Nordic-darker.tar.xz"
+    dest: "/home/{{ user }}/.themes"
+    remote_src: false
+  
+
+- name: "Nordic: gsettings gtk enable"
+  ansible.builtin.command:
+    cmd: gsettings set org.gnome.desktop.interface gtk-theme "Nordic-darker"
+  
+  changed_when: false
+
+- name: "Nordic: gsettings wm preference enable"
+  ansible.builtin.command:
+    cmd: gsettings set org.gnome.desktop.wm.preferences theme "Nordic-darker"
+  
+  changed_when: false

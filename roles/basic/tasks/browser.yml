@@ -1,0 +1,35 @@
+---
+- name: Install firefox
+  become: true #needed
+  become_user: root
+  apt:
+    name: firefox
+    state: latest
+  
+- name: Install chromium
+  become: true #needed
+  become_user: root
+  apt:
+    name: chromium-browser
+    state: latest
+
+- name: "Chrome: apt | ensure Google linux signing key present"
+  become: true #needed
+  become_user: root
+  apt_key: url=https://dl-ssl.google.com/linux/linux_signing_key.pub state=present
+
+- name: "Chrome: apt | ensure Google chrome repo present"
+  become: true #needed
+  become_user: root
+  apt_repository:
+    repo: "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"
+    filename: "google-chrome"
+    state: present
+    update_cache: yes
+
+- name: "Chrome: apt | ensure Google chrome present"
+  become: true #needed
+  become_user: root
+  apt:
+    name: "google-chrome-stable"
+    state: "latest" #https://www.ubuntuupdates.org/package/google_chrome/stable/main/base/google-chrome-stable

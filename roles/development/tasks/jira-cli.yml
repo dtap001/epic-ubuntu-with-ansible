@@ -1,0 +1,39 @@
+- name: Check if Jira CLI is already installed
+  stat:
+    path: "/usr/local/bin/jira"
+  register: is_jira_installed
+
+- name: Get the latest Jira CLI version
+  ansible.builtin.shell: |
+    curl -s "https://api.github.com/repos/ankitpokhrel/jira-cli/releases/latest" | grep -Po '"tag_name": "v\K[^"]*'
+  register: jira_version
+  when: not is_jira_installed.stat.exists
+  changed_when: false
+
+- name: Download Jira CLI tarball
+  ansible.builtin.get_url:
+    url: "https://github.com/ankitpokhrel/jira-cli/releases/latest/download/jira_{{ jira_version.stdout }}_Linux_x86_64.tar.gz"
+    dest: "/tmp/jira_cli.tar.gz"
+  when: not is_jira_installed.stat.exists
+
+- name: Extract Jira CLI
+  ansible.builtin.unarchive:
+    src: "/tmp/jira_cli.tar.gz"
+    dest: "/tmp"
+    remote_src: true
+    extra_opts: ["--strip-components=2"]
+  when: not is_jira_installed.stat.exists
+
+- name: Move Jira CLI to /usr/local/bin
+  become: true #needed
+  become_user: root  
+  ansible.builtin.command: mv /tmp/jira /usr/local/bin/jira
+  when: not is_jira_installed.stat.exists
+
+- name: Clean up Jira cli tar.gz file
+  become: true #needed
+  become_user: root  
+  ansible.builtin.file:
+    path: "/tmp/jira_cli.tar.gz"
+    state: absent
+  when: not is_jira_installed.stat.exists

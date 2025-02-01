@@ -1,0 +1,15 @@
+---
+- include_tasks: os_setup.yml
+- include_tasks: zsh.yml
+- include_tasks: homebrew.yml
+- include_tasks: basic_dependencies.yml
+- include_tasks: prevent-wake.yml
+- include_tasks: ssh.yml
+- include_tasks: keepassxc.yml
+- include_tasks: basic_tools.yml
+- include_tasks: gnome-tools.yml
+- include_tasks: battery.yml
+- include_tasks: rofi.yml
+- include_tasks: browser.yml
+- include_tasks: remote-desktop.yml
+- include_tasks: espanso.yml

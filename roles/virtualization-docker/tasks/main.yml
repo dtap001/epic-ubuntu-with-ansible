@@ -1,0 +1,52 @@
+---
+- name: "Docker: Add Apt-Keys"
+  become: true #needed
+  become_user: root
+  apt_key:
+    url: '{{item.name}}'
+    state: present
+  with_items:
+    - { name: 'https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg' }
+
+- name: "Docker: Add Repos"
+  become: true #needed
+  become_user: root
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable
+    filename: docker
+    state: present
+
+- name: "Docker: Install packages"
+  become: true #needed
+  become_user: root
+  apt:
+    name: '{{item.name}}'
+    state: latest
+    update_cache: yes
+  with_items:
+    - { name: 'docker-ce' }
+
+- name: "Docker: Download docker-compose"  
+  become: true #needed
+  become_user: root
+  get_url:
+    url: "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-Linux-x86_64"
+    dest: "/usr/local/bin/docker-compose"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Docker: Ensure docker-engine is enabled and started"
+  become: true #needed
+  become_user: root
+  service:
+    name: docker
+    enabled: true
+    state: started
+
+- name: "Docker: Ensure that user {{ user }} is member of docker group"
+  become: true #needed
+  become_user: root
+  user: name={{ user }}
+        groups=docker
+        append=yes
