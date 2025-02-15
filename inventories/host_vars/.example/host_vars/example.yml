@@ -33,5 +33,7 @@ oh_my_zsh_extra: |-
   export PATH=~/.local/bin:$PATH
   [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-other_ssh_hosts: []
-extra_ssh_hosts: []
+other_ssh_hosts_as_string: ""
+extra_ssh_hosts: 
+  - hostname: example_server
+    user: example_server_user

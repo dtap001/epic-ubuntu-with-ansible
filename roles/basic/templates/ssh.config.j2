@@ -1,4 +1,6 @@
-{{ other_ssh_hosts }}
+{{ other_ssh_hosts_as_string }}
+
+{% if extra_ssh_hosts | length > 0 %}
 {% for host in extra_ssh_hosts %}
 Host {{ host.host | default(host.hostname) }}
     HostName {{ host.hostname }}
@@ -6,3 +8,4 @@ Host {{ host.host | default(host.hostname) }}
     Port {{ host.port | default('22') }}
     StrictHostKeyChecking no
 {% endfor %}
+{% endif %}
