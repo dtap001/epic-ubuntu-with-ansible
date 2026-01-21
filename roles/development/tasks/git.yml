@@ -13,26 +13,6 @@
     value: "{{ git_username }}"
   become: true
   
-- name: "GitKraken: check if installed"
-  stat:
-    path: "/usr/bin/gitkraken"
-  register: git_kraken_installed
-
-- name: "GitKraken: download "
-  ansible.builtin.get_url:
-    url: https://release.axocdn.com/linux/gitkraken-amd64.deb
-    dest: /tmp/git_kraken.deb
-  when: not git_kraken_installed.stat.exists
-
-- name: "GitKraken: install"
-  shell:
-    cmd: dpkg -i /tmp/git_kraken.deb
-  ignore_errors: true
-  changed_when: false
-  when: not git_kraken_installed.stat.exists
-  become: true #needed
-  become_user: root
-
 - name: "Git-Delta: Check if already installed"
   stat:
     path: "/usr/bin/delta"

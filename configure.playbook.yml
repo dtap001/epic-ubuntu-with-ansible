@@ -1,24 +1,21 @@
 ---
 - hosts: all
   gather_facts: true
-  become_user: "{{ user }}"
+  become_user: "{{ user }}"  # no automatica; sudo but when become: true state it will be using the name of the current user
   become_method: sudo
   connection: local
   roles:
     - role: basic
       when: basic_role_enabled | default(false)
+    
+    - role: gnome
+      when: gnome_role_enabled | default(false)
 
     - role: development
       when: development_role_enabled | default(false)
 
-    - role: gnome
-      when: gnome_role_enabled | default(false)
-
     - role: media
       when: media_role_enabled | default(false)
-
-    - role: messaging
-      when: messaging_role_enabled | default(false)
 
     - role: sync
       when: sync_role_enabled | default(false)
@@ -26,14 +23,17 @@
     - role: sync-private
       when: sync_private_role_enabled | default(false)
 
-    - role: warez
-      when: warez_role_enabled | default(false)
+    - role: p2p
+      when: p2p_role_enabled | default(false)
+
+    - role: messaging
+      when: messaging_role_enabled | default(false)
+    
+    - role: virtualization-docker
+      when: virtualization_docker_role_enabled | default(false)
 
     - role: virtualization-virtualbox
       when: virtualization_virtualbox_role_enabled | default(false)    
-      
-    - role: virtualization-docker
-      when: virtualization_docker_role_enabled | default(false)
       
     - role: virtualization-k3d
       when: virtualization_k3d_role_enabled | default(false)

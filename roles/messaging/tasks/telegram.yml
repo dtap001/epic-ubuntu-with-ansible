@@ -1,12 +1,8 @@
----
-- name: Install telegram-desktop
-  become: true #needed
+- name: Install telegram-desktop via snap
+  become: true # needed
   become_user: root
-  package:
-    name: '{{item.name}}'
-    state: latest
-  with_items:
-    - { name: 'telegram-desktop' }
+  ansible.builtin.command:
+    cmd: snap install telegram-desktop
 
 - name: Ensure config folder exists
   ansible.builtin.file:
@@ -15,7 +11,7 @@
 
 - name: Ensure autostart
   ansible.builtin.copy:
-    src: "/usr/share/applications/telegramdesktop.desktop"
+    src: "/snap/bin/telegram-desktop"
     dest: "/home/{{ user }}/.config/autostart"
     mode: u+rwx,g-r,o-r
     owner: "{{ user }}"

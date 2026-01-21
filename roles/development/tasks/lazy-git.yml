@@ -50,6 +50,11 @@
     state: absent
   when: not is_lazygit_installed.stat.exists
 
+- name: "LazyGit: ensure directory exists"
+  ansible.builtin.file:
+    path: "/home/{{ user }}/.config/lazygit"
+    state: directory
+
 - name: "LazyGit: Udpdate config file"
   template:
     src: ../templates/lazy-git.config.config.yml.j2

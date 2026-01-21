@@ -17,7 +17,6 @@
 #     remote_src: false
 #   
 
-
 - name: Install papirus
   become: true #needed
   become_user: root
@@ -28,5 +27,4 @@
 - name: "Papirus: gsettings gtk enable"
   ansible.builtin.command:
     cmd: gsettings set org.gnome.desktop.interface icon-theme "ePapirus-Dark"
-  
   changed_when: false

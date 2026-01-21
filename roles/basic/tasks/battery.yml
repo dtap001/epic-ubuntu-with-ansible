@@ -25,25 +25,3 @@
     daemon_reload: true
     name: upower.service
   when: PercentageAction.changed or PercentageCritical.changed
-
-
-# - name: "LidClose action on external power"
-#   ansible.builtin.lineinfile:
-#     path: /etc/systemd/logind.conf
-#     regexp: '^HandleLidSwitchExternalPower'
-#     line: HandleLidSwitchExternalPower=suspend
-#   register: handleLidSwitchOnExternalPower
-
-# - name: "LidClose action on battery"
-#   ansible.builtin.lineinfile:
-#     path: /etc/systemd/logind.conf
-#     regexp: '^HandleLidSwitch'
-#     line: HandleLidSwitch=suspend
-#   register: HandleLidSwitchOnBattery
-
-# - name: "Restart logind for lid actions"
-#   ansible.builtin.systemd:
-#     state: restarted
-#     daemon_reload: true
-#     name: systemd-logind.service
-#   when: handleLidSwitchOnExternalPower.changed or HandleLidSwitchOnBattery.changed

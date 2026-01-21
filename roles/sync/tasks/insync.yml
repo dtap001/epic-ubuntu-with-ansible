@@ -7,7 +7,7 @@
 - name: "InSync: Add repository"
   become: true #needed
   become_user: root
-  apt_repository: repo='deb http://apt.insync.io/ubuntu/ jammy  non-free contrib'
+  apt_repository: repo='deb http://apt.insync.io/ubuntu/ lunar  non-free contrib'
 
 - name: "InSync: Install"
   become: true #needed

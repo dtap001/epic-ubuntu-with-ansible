@@ -8,7 +8,6 @@
   ansible.builtin.file:
     path: "/home/{{ user }}/.themes"
     state: "directory"
-  
 
 - name: "Nordic: Unzip"
   ansible.builtin.unarchive:
@@ -16,15 +15,12 @@
     dest: "/home/{{ user }}/.themes"
     remote_src: false
   
-
 - name: "Nordic: gsettings gtk enable"
   ansible.builtin.command:
     cmd: gsettings set org.gnome.desktop.interface gtk-theme "Nordic-darker"
-  
   changed_when: false
 
 - name: "Nordic: gsettings wm preference enable"
   ansible.builtin.command:
     cmd: gsettings set org.gnome.desktop.wm.preferences theme "Nordic-darker"
-  
   changed_when: false

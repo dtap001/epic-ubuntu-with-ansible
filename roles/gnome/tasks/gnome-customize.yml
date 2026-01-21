@@ -82,8 +82,7 @@
   tags:
     - fonts
 
-- name: Create a list of current enabled extensions
-  
+- name: Create a list of current enabled extensions  
   become: true
   ansible.builtin.shell: gnome-extensions list --enabled > /tmp/before.txt
 
@@ -91,8 +90,7 @@
   include_tasks: get-extension-info.yml
   loop: "{{ gnome_extensions|default([]) }}"
 
-- name: Download GNOME Shell extensions
-  
+- name: Download GNOME Shell extensions  
   become: true
   ansible.builtin.get_url:
     url: "{{ item.url }}"
@@ -106,7 +104,6 @@
 
 - name: Install GNOME extensions
   ansible.builtin.command: gnome-extensions install "/tmp/{{ item.name }}.zip" --force
-  
   become: true
   loop: "{{ gnome_extensions_full|default([]) }}"
   loop_control:
@@ -116,7 +113,6 @@
   ignore_errors: true
 
 - name: Restart Gnome Shell to ensure all extensions are visible
-  
   become: true
   ansible.builtin.command:
     cmd: killall -3 gnome-shell
@@ -128,8 +124,7 @@
   delegate_to: localhost
 
 - name: Enable extensions 
-  ansible.builtin.command: gnome-extensions enable {{ item.name }}
-  
+  ansible.builtin.command: gnome-extensions enable {{ item.name }}  
   become: true
   when:
     - item.enable | default(false)
@@ -141,8 +136,7 @@
     - settings
   ignore_errors: true
 
-- name: Create a list of enabled extensions
-  
+- name: Create a list of enabled extensions  
   become: true
   ansible.builtin.shell: gnome-extensions list --enabled > /tmp/after.txt
   changed_when: false

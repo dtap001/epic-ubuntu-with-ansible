@@ -69,22 +69,6 @@ gnome_dconf:
   - key: "/org/gnome/shell/extensions/cpupower/show-freq-in-taskbar"
     value: "true"
 
-  - key: "/org/gnome/shell/extensions/openweather/position-index"
-    value: "1"
-  - key: "/org/gnome/shell/extensions/openweather/show-comment-in-panel"
-    value: "false"
-
-  - key: "/org/gnome/shell/extensions/mpris-label/extension-index"
-    value: "6"
-  - key: "/org/gnome/shell/extensions/mpris-label/extension-place"
-    value: "'left'"
-  - key: "/org/gnome/shell/extensions/mpris-label/left-padding"
-    value: "5"
-  - key: "/org/gnome/shell/extensions/mpris-label/right-padding"
-    value: "5"
-  - key: "/org/gnome/shell/extensions/mpris-label/left-click-action"
-    value: "'next-track'"
-
   - key: "/org/gnome/shell/extensions/vitals/hot-sensors"
     value: "['_memory_usage_', '__network-rx_max__', '__temperature_avg__']"
   - key: "/org/gnome/shell/extensions/vitals/show-battery"
@@ -115,63 +99,9 @@ gnome_extensions:
   - id: 5278
     name: pano@elhan.io
     enable: yes
-  - id: 945
-    name: cpupower@mko-sl.de
-    enable: yes
-  - id: 5103
-    name: docker@stickman_0x00.com
-    enable: yes
-  - id: 750
-    name: openweather-extension@jenslody.de
-    enable: yes
-  - id: 5004
-    name: dash-to-dock-cosmic-@halfmexicanhalfamazing@gmail.com
-    enable: yes
-  - id: 4928
-    name: mprisLabel@moon-0xff.github.com
-    enable: yes
-  - id: 751
-    name: audio-output-switcher@anduchs
-    enable: yes
   - id: 4033
     name: x11gestures@joseexposito.github.io
     enabled: no
-  - id: 4442
-    name: gSnap@micahosborne
-    enabled: yes
   - id: 1401
     name: bluetooth-quick-connect@bjarosze.gmail.com
     enabled: yes
-  - id: 5368
-    name: places-menu@gnome-shell-extensions.gcampax.github.com
-    enabled: yes
-  - id: 7
-    name: drive-menu@gnome-shell-extensions.gcampax.github.com
-    enabled: yes
-  - id: 4491
-    name: PrivacyMenu@stuarthayhurst
-    enabled: no
-  - id: 2932
-    name: executor@raujonas.github.io
-    enabled: yes  
-  - id: 4245
-    name: gestureImprovements@gestures
-    enabled: no
-# gnome_files:
-#   - src: gtk.css
-#     dest: "/home/{{ gnome_user }}/.config/{{ gtk_version }}/gtk.css"
-# gnome_fonts:
-#   - url: https://github.com/adobe-fonts/source-code-pro/archive/2.030R-ro/1.050R-it.zip
-#     name: SourceCodePro
-#     fonts: "source-code-pro-2.030R-ro-1.050R-it/OTF/*.otf"
-#gnome_gsettings:
-# - schema: org.gnome.desktop.interface
-#   key: monospace-font-name
-#   value: '"Source Code Pro Medium 16"'
-# - schema: org.gnome.shell.extensions.dash-to-panel
-#   schemadir: ~/.local/share/gnome-shell/extensions/dash-to-panel@jderose9.github.com/schemas
-#   key: panel-position
-#   value: TOP
-# gnome_packages:
-#   - fonts-roboto
-#gtk_version: 3.0

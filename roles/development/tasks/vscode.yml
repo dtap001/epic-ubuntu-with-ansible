@@ -1,43 +1,57 @@
----
 - name: Install dependencies (apt)
-  become: true #needed
+  become: true
   become_user: root
   ansible.builtin.apt:
     name:
       - ca-certificates
       - apt-transport-https
+      - gnupg
     state: present
+    update_cache: yes
 
 - name: Create APT keyrings dir
-  become: true #needed
+  become: true
   become_user: root
   ansible.builtin.file:
-    path: '/etc/apt/keyrings'
+    path: '/usr/share/keyrings'
     state: directory
-    mode: 'u=rwx,go=rx'
+    mode: '0755'
 
-- name: Install key (apt)
-  become: true #needed
-  become_user: root  
+- name: Download Microsoft key
+  become: true
+  become_user: root
   ansible.builtin.get_url:
     url: 'https://packages.microsoft.com/keys/microsoft.asc'
-    dest: '/etc/apt/keyrings/'
-    mode: 'u=rw,go=r'
+    dest: '/tmp/microsoft.asc'
+    mode: '0644'
     force: true
 
-- name: Install VS Code repo (apt)
-  become: true #needed
+- name: Convert Microsoft key to binary GPG
+  become: true
   become_user: root
+  ansible.builtin.shell: |
+    gpg --dearmor --output /usr/share/keyrings/microsoft.gpg /tmp/microsoft.asc
+  args:
+    creates: /usr/share/keyrings/microsoft.gpg
+
+- name: Add VS Code repo
+  become: true
+  become_user: root
+
   ansible.builtin.apt_repository:
-    repo: >-
-      deb [arch=amd64 trusted=true signed-by=/etc/apt/keyrings/microsoft.asc]
-      https://packages.microsoft.com/repos/code stable main
+    repo: 'deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/code stable main'
     filename: vscode
     state: present
 
-- name: Install VS Code (apt)
-  become: true #needed
+- name: Update APT cache
+  become: true
   become_user: root
   ansible.builtin.apt:
-    name: "code"
+    update_cache: yes
+
+- name: Install VS Code
+  become: true
+  become_user: root
+  ansible.builtin.apt:
+    name: code
     state: present

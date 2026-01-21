@@ -3,4 +3,3 @@
 - include_tasks: gnome-customize.yml
 - include_tasks: gnome-icons.yml
 - include_tasks: gnome-theme.yml
-- include_tasks: gnome-extensions-gsnap.yml

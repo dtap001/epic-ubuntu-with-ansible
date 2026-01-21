@@ -1,7 +1,6 @@
 ---
-- include_tasks: cli-tools.yml
 - include_tasks: vscode.yml
-- include_tasks: tabby.yml
+- include_tasks: cli-tools.yml
 - include_tasks: git.yml
 - include_tasks: sublime.yml
 - include_tasks: dev-frameworks.yml

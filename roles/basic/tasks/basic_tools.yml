@@ -47,14 +47,7 @@
   apt:
     name: tree
     state: latest
-
-- name: Install mc
-  become: true #needed
-  become_user: root
-  apt:
-    name: mc
-    state: latest
-  
+ 
 - name: Install nmap
   become: true #needed
   become_user: root
@@ -134,18 +127,6 @@
     key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom5/command"
     value: "'flameshot gui --clipboard --path /home/{{ user }}/Pictures/Screenshots'"
 
-- name: "Superfile: Check if already installed"
-  stat:
-    path: "/usr/local/bin/spf"
-  register: is_superfile_installed
-
-- name: "Superfile: install"
-  become: true # needed
-  become_user: "root"
-  shell:
-    cmd: bash -c "$(curl -sLo- https://superfile.netlify.app/install.sh)"
-  when: not is_superfile_installed.stat.exists
-  
 - name: Install ripgrep for recursive fuzzy search
   become: true
   become_user: root
@@ -162,7 +143,7 @@
   ansible.builtin.get_url:
     url: "https://dystroy.org/broot/download/x86_64-linux/broot"
     dest: "/tmp/broot"
-  when: not is_broot_installed
+  when:  is_broot_installed.stat.exists
 
 - name: "broot: move binary to usr bin"
   become: true #needed
@@ -171,4 +152,4 @@
     src: "/tmp/broot"
     dest: "/usr/local/bin/broot"
     mode: '0755'
-  when: not is_broot_installed
+  when: is_broot_installed.stat.exists

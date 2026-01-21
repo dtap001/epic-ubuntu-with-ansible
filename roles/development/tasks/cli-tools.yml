@@ -21,19 +21,18 @@
   ansible.builtin.shell: "sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl"
   when: not is_kubectl_installed.stat.exists
 
-- name: "Terraform: add GPG key"
+- name: Add HashiCorp GPG key
   become: true #needed
   become_user: root
-  apt_key:
+  ansible.builtin.apt_key:
     url: https://apt.releases.hashicorp.com/gpg
     state: present
 
-- name: "Terraform:  add repo"
+- name: Add HashiCorp APT repository
   become: true #needed
   become_user: root
-  apt_repository: 
-    repo: 'deb https://apt.releases.hashicorp.com jammy main'
-    filename: 'hashicorp.list'
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
     state: present
 
 - name: "Terraform: install"
@@ -45,12 +44,10 @@
     state: latest
 
 - name: "K9s: install"
+  become: true #needed
+  become_user: root
   shell:  
-    cmd: /home/linuxbrew/.linuxbrew/bin/brew install k9s
-
-- name: "Navi: install"
-  shell:  
-    cmd: /home/linuxbrew/.linuxbrew/bin/brew install navi
+    cmd: wget https://github.com/derailed/k9s/releases/latest/download/k9s_linux_amd64.deb && apt install ./k9s_linux_amd64.deb && rm k9s_linux_amd64.deb
 
 - name: "SVN: install"
   become: true #needed
