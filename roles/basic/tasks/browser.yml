@@ -1,21 +1,29 @@
 ---
-- name: Install Firefox
+- name: Ensure snapd is installed
   become: true
   become_user: root
-  apt:
-    name: firefox
-    state: latest
-    update_cache: yes
+  ansible.builtin.apt:
+    name: snapd
+    state: present
 
-- name: Install Chromium
+- name: Ensure snapd is running
   become: true
   become_user: root
-  apt:
-    name: chromium
-    state: latest
-    update_cache: yes
+  ansible.builtin.systemd:
+    name: snapd
+    state: started
+    enabled: true
+
+- name: Install Firefox via Snap
+  community.general.snap:
+    name: firefox
+    state: present
+  become: true
+  become_user: root
 
 - name: Install Chromium via Snap
-  snap:
+  community.general.snap:
     name: chromium
     state: present
+  become: true
+  become_user: root
