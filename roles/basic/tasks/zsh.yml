@@ -13,6 +13,7 @@
   become: true
   
 - name: Oh my zsh - Cloning repo /home/{{ user }}/.oh-my-zsh.
+  become: true
   git:
     repo: "{{ oh_my_zsh_url_download }}"
     dest: "/home/{{ user }}/.oh-my-zsh"
@@ -33,11 +34,12 @@
 
 - name: check if zshrc is already created
   stat:
-    path: ~/.zshrc
+    path: "/home/{{ user }}/.zshrc"
   register: zsh_rc_file
   become: true
   
 - name: Oh my zsh - Creating new ~/.zshrc.
+  become: true
   template:
     src: ../templates/zshrc.j2
     dest: "/home/{{ user }}/.zshrc"
@@ -68,10 +70,12 @@
   with_items: "{{ oh_my_zsh_custom_plugins }}"
 
 - name: Oh my zsh - Mark plugin directories as safe for Git
+  become: true
   command: git config --global --add safe.directory "{{ item.dest }}"
   with_items: "{{ oh_my_zsh_custom_plugins }}"
 
 - name: Oh my zsh - Add plugins.
+  become: true
   git:
     repo: "{{ item.repo }}"
     dest: "{{ item.dest }}"
@@ -80,53 +84,58 @@
 #FZF
 - name: check if FZF already installed
   stat:
-    path: ~/.fzf
+    path: "/home/{{ user }}/.fzf"
   register: fzf_directory
   become: true
 
 - name: Clone FZF
+  become: true
   git:
     repo: https://github.com/junegunn/fzf.git
-    dest: ~/.fzf
+    dest: "/home/{{ user }}/.fzf"
     version: 0.18.0
   when: not fzf_directory.stat.exists
-  become: true
 
 - name: Install FZF
-  command: ~/.fzf/install --bin
-  args:
-    chdir: ~/
   become: true
+  command: "/home/{{ user }}/.fzf/install --bin"
+  args:
+    chdir: "/home/{{ user }}"
   when: not fzf_directory.stat.exists
 
 - name: Enable FZF in zsh
+  become: true
   lineinfile:
-    path: ~/.zshrc
+    path: "/home/{{ user }}/.zshrc"
     regexp:
     line: '[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh'
     state: present
 
 #powerlevel10k
 - name: Check if Powerlevel10k already installed
+  become: true
   stat:
-    path: ~/.oh-my-zsh/custom/themes/powerlevel10k
+    path: "/home/{{ user }}/.oh-my-zsh/custom/themes/powerlevel10k"
   register: powerline10k_directory
 
 - name: Install PowerLevel10k theme
+  become: true
   git:
     repo: https://github.com/romkatv/powerlevel10k.git
-    dest: ~/.oh-my-zsh/custom/themes/powerlevel10k
+    dest: "/home/{{ user }}/.oh-my-zsh/custom/themes/powerlevel10k"
     version: v1.13.0
   when: not powerline10k_directory.stat.exists
   
 - name: Set Powerline10k as zsh theme
+  become: true
   lineinfile:
-    path: ~/.zshrc
+    path: "/home/{{ user }}/.zshrc"
     regexp: '^ZSH_THEME='
     line: 'ZSH_THEME="powerlevel10k/powerlevel10k"'
     state: present
 
 - name: Set Powerline10k config file
+  become: true
   ansible.builtin.copy:
     src: ../files/p10k.zsh
     dest: "/home/{{ user }}/.p10k.zsh"

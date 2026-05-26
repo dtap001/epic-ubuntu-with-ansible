@@ -19,11 +19,30 @@ def run(cmd, check=True, **kwargs):
     return subprocess.run(cmd, check=check, **kwargs)
 
 
+def repo_root():
+    env_root = os.environ.get('EPIC_REPO_ROOT')
+    if env_root:
+        return os.path.abspath(env_root)
+    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def real_user():
+    env_user = os.environ.get('EPIC_REAL_USER')
+    if env_user:
+        return env_user
+    if os.geteuid() == 0 and os.environ.get('SUDO_USER'):
+        return os.environ['SUDO_USER']
+    return os.environ.get('USER', '')
+
+
 def main():
+    root = repo_root()
+    os.chdir(root)
+
     hostname = subprocess.check_output(['hostname'], text=True).strip()
-    inventories_file_path = './inventories/inventory.yml'
-    inventory_path = f'./inventories/host_vars/{hostname}'
-    example_path = './inventories/host_vars/.example'
+    inventories_file_path = os.path.join(root, 'inventories', 'inventory.yml')
+    inventory_path = os.path.join(root, 'inventories', 'host_vars', hostname)
+    example_path = os.path.join(root, 'inventories', 'host_vars', '.example')
 
     if not os.path.exists(inventory_path):
         print(f"No inventory found for hostname '{hostname}' in path {inventory_path}")
@@ -33,7 +52,7 @@ def main():
             print('Error: Example inventory folder not found. Exiting.')
             sys.exit(1)
 
-        new_inventory_path = f'./inventories/host_vars/{newhostname}'
+        new_inventory_path = os.path.join(root, 'inventories', 'host_vars', newhostname)
         shutil.copytree(example_path, new_inventory_path)
 
         src = os.path.join(new_inventory_path, 'host_vars', 'example.yml')
@@ -75,15 +94,24 @@ def main():
 
         print(f"Now check again which role you want to enable in the file: {host_vars_file}")
 
-    host_vars_file = f"./inventories/host_vars/{subprocess.check_output(['hostname'], text=True).strip()}/host_vars/{subprocess.check_output(['hostname'], text=True).strip()}.yml"
+    current_hostname = subprocess.check_output(['hostname'], text=True).strip()
+    host_vars_file = os.path.join(
+        root,
+        'inventories',
+        'host_vars',
+        current_hostname,
+        'host_vars',
+        f'{current_hostname}.yml',
+    )
+    user = real_user()
     print(f"Setting up vault key file based on host vars file: {host_vars_file}")
-    print(f"Starting setup vault with user: {os.environ.get('USER','')}")
+    print(f"Starting setup vault with user: {user}")
 
     # Call existing shell script for vault key setup (not converted here)
     vault_script = os.path.join(os.path.dirname(__file__), 'setup-vault-key.sh')
     if os.path.exists(vault_script):
         try:
-            run([vault_script, os.environ.get('USER','')])
+            run([vault_script, user])
         except subprocess.CalledProcessError:
             print('Warning: setup-vault-key.sh failed or returned non-zero status.')
     else:
