@@ -3,25 +3,53 @@
   template:
     src: "../templates/ssh.config.j2"
     dest: "/home/{{ user }}/.ssh/config"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: "0644"
 
-- name: Check if public key {{ ssh_key_path }}-rsa.pub already exists
+- name: Resolve SSH key path for {{ user }}
+  set_fact:
+    ssh_key_path_expanded: "{{ ssh_key_path | regex_replace('^~', '/home/' + user) }}"
+
+- name: Ensure .ssh directory exists
+  file:
+    path: "/home/{{ user }}/.ssh"
+    state: directory
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: "0700"
+
+- name: Check if public key {{ ssh_key_path_expanded }}-rsa.pub already exists
   stat:
-    path: "{{ ssh_key_path }}-rsa.pub"
+    path: "{{ ssh_key_path_expanded }}-rsa.pub"
   register: ssh_public_key_stat_rsa
-  become: true
 
 - name: Generate key rsa
-  command: ssh-keygen -t rsa -N "" -C "{{ ssh_key_email }}" -f {{ ssh_key_path }}-rsa
+  command: ssh-keygen -t rsa -N "" -C "{{ ssh_key_email }}" -f {{ ssh_key_path_expanded }}-rsa
   become: true
+  become_user: "{{ user }}"
+  environment:
+    HOME: "/home/{{ user }}"
   when: not ssh_public_key_stat_rsa.stat.exists
 
-- name: Start ssh agent
-  shell: "eval $(ssh-agent -s)"
-  become_user: root
+- name: Add private rsa key to ssh-agent
+  shell: |
+    set -e
+    export HOME="/home/{{ user }}"
+    KEY="{{ ssh_key_path_expanded }}-rsa"
+    # GNOME/desktop sessions often set SSH_AUTH_SOCK to a dead keyring socket.
+    if [ -n "${SSH_AUTH_SOCK:-}" ] && [ ! -S "$SSH_AUTH_SOCK" ]; then
+      unset SSH_AUTH_SOCK SSH_AGENT_PID
+    fi
+    if [ -n "${SSH_AUTH_SOCK:-}" ] && ssh-add -l >/dev/null 2>&1; then
+      ssh-add "$KEY"
+    else
+      unset SSH_AUTH_SOCK SSH_AGENT_PID
+      eval "$(ssh-agent -s)"
+      ssh-add "$KEY"
+    fi
   become: true
-  when: not ssh_public_key_stat_rsa.stat.exists
-
-- name: Add private  rsa key to ssh-agent
-  command: ssh-add {{ ssh_key_path }}-rsa
-  become: true
+  become_user: "{{ user }}"
+  environment:
+    HOME: "/home/{{ user }}"
   when: not ssh_public_key_stat_rsa.stat.exists
