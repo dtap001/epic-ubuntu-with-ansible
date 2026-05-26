@@ -1,25 +1,53 @@
 ---
-- name: "Tabby: check if repo added"
-  stat:
-    path: "/etc/apt/sources.list.d/eugeny_tabby.list"
-  register: is_tabby_repo_added
+- name: "Tabby: check if already installed"
+  ansible.builtin.stat:
+    path: /usr/bin/tabby
+  register: tabby_installed
 
-- name: "Tabby: repo add"
-  ansible.builtin.shell: "curl -s https://packagecloud.io/install/repositories/eugeny/tabby/script.deb.sh | sudo bash"
-  when: not is_tabby_repo_added.stat.exists
+- name: "Tabby: Get the latest version"
+  ansible.builtin.shell: |
+    curl -s https://api.github.com/repos/Eugeny/tabby/releases/latest | jq -r '.tag_name'
+  register: tabby_version
+  when: not tabby_installed.stat.exists
+  changed_when: false
 
-- name: "Tabby: install"
-  become: true #needed
+- name: "Tabby: set deb architecture suffix"
+  ansible.builtin.set_fact:
+    tabby_deb_arch: >-
+      {%- if ansible_architecture == 'aarch64' -%}arm64
+      {%- elif ansible_architecture in ['armv7l', 'armv6l'] -%}armv7l
+      {%- else -%}x64
+      {%- endif -%}
+  when: not tabby_installed.stat.exists
+
+- name: "Tabby: Download .deb from GitHub releases"
+  ansible.builtin.get_url:
+    url: "https://github.com/Eugeny/tabby/releases/download/{{ tabby_version.stdout }}/tabby-{{ tabby_version.stdout | regex_replace('^v', '') }}-linux-{{ tabby_deb_arch }}.deb"
+    dest: /tmp/tabby.deb
+    mode: "0644"
+  when: not tabby_installed.stat.exists
+
+- name: "Tabby: install from .deb"
+  become: true
   become_user: root
-  apt:
-    name: tabby-terminal
-    state: latest
+  ansible.builtin.apt:
+    deb: /tmp/tabby.deb
+    state: present
+  when: not tabby_installed.stat.exists
 
-- name: "Tabby: Create config  directory if it does not exist"
+- name: "Tabby: clean up downloaded .deb"
+  become: true
+  become_user: root
+  ansible.builtin.file:
+    path: /tmp/tabby.deb
+    state: absent
+  when: not tabby_installed.stat.exists
+
+- name: "Tabby: Create config directory if it does not exist"
   ansible.builtin.file:
     path: "/home/{{ user }}/.config/tabby/"
     state: directory
-    mode: '0755'
+    mode: "0755"
 
 - name: "Tabby: configure"
   template:
