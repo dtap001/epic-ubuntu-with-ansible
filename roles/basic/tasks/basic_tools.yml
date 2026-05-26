@@ -100,33 +100,6 @@
     name: traceroute
     state: latest
 
-- name: Install flameshot for screenshots
-  become: true
-  become_user: root
-  apt:
-    name: flameshot
-    state: latest
-
-- name: "Flameshot: global summon. disable current print setting"
-  community.general.dconf:
-    key: "/org/gnome/terminal/legacy/keybindings/print"
-    value: "'disabled'"
-
-- name: "Flameshot: global summon"
-  community.general.dconf:
-    key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom5/name"
-    value: "'flameshot'"
-
-- name: "Flameshot: global summon"
-  community.general.dconf:
-    key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom5/binding"
-    value: "'Print'"
-  
-- name: "Flameshot: global summon"
-  community.general.dconf:
-    key: "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom5/command"
-    value: "'flameshot gui --clipboard --path /home/{{ user }}/Pictures/Screenshots'"
-
 - name: Install ripgrep for recursive fuzzy search
   become: true
   become_user: root
